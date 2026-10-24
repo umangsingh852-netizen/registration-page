@@ -133,51 +133,86 @@ app.post(
   "/api/registrations",
   registrationLimiter,
   async (req, res) => {
-    const { turnstileToken } = req.body ?? {};
-
-    const captchaValid = await verifyTurnstileToken(turnstileToken);
-
-    if (!captchaValid) {
-        return res.status(403).json({
-            error: "CAPTCHA verification failed. Please try again.",
-        });
-    }
-    const parsed = registrationSchema.safeParse(req.body);
-
-    if (!parsed.success) {
-      return res.status(400).json({
-        error: "Please check the registration details."
-      });
-    }
-
-    const { name, studentId, branch, year } = parsed.data;
-    const email = parsed.data.email.toLowerCase();
-
     try {
+      const { turnstileToken } = req.body ?? {};
+
+      const captchaValid = await verifyTurnstileToken(turnstileToken);
+
+      if (!captchaValid) {
+        return res.status(403).json({
+          error: "CAPTCHA verification failed. Please try again.",
+        });
+      }
+
+      const parsed = registrationSchema.safeParse(req.body);
+
+      if (!parsed.success) {
+        return res.status(400).json({
+          error: "Please check the registration details.",
+        });
+      }
+
+      const {
+        fullName,
+        studentNumber,
+        universityRollNo,
+        branch,
+        gender,
+        residence,
+        currentYear,
+        section,
+        collegeEmail,
+        whatsapp,
+        attendanceConfirmed,
+      } = parsed.data;
+
       const result = await pool.query(
-        `INSERT INTO registrations
-          (name, email, student_id, branch, year)
-         VALUES ($1, $2, $3, $4, $5)
-         ON CONFLICT DO NOTHING
-         RETURNING id`,
-        [name, email, studentId, branch, year]
+        `INSERT INTO hour_of_code_registrations (
+          full_name,
+          student_number,
+          university_roll_no,
+          branch,
+          gender,
+          residence,
+          current_year,
+          section,
+          college_email,
+          whatsapp,
+          attendance_confirmed
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        ON CONFLICT DO NOTHING
+        RETURNING id`,
+        [
+          fullName,
+          studentNumber,
+          universityRollNo,
+          branch,
+          gender,
+          residence,
+          Number(currentYear),
+          section,
+          collegeEmail.toLowerCase(),
+          whatsapp,
+          attendanceConfirmed,
+        ]
       );
 
       if (result.rowCount === 0) {
         return res.status(409).json({
-          error: "This email or student ID may already be registered."
+          error: "This student number, roll number, or email may already be registered.",
         });
       }
 
       return res.status(201).json({
         message: "Registration successful.",
-        registrationId: result.rows[0].id
+        registrationId: result.rows[0].id,
       });
     } catch (error) {
       console.error("Registration failed:", error.message);
 
       return res.status(500).json({
-        error: "Registration could not be completed. Please try again."
+        error: "Registration could not be completed. Please try again.",
       });
     }
   }
