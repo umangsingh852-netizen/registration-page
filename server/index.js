@@ -34,12 +34,34 @@ const registrationLimiter = rateLimit({
 });
 
 const registrationSchema = z.object({
-  name: z.string().trim().min(2).max(100),
-  email: z.string().trim().email().max(254),
-  studentId: z.string().trim().min(3).max(50),
-  branch: z.string().trim().min(2).max(100),
-  year: z.coerce.number().int().min(1).max(5)
-}).strict();
+  fullName: z.string().trim().min(2).max(100),
+  studentNumber: z.string().trim().min(1).max(50)
+    .refine((value) => !value.startsWith("26"), {
+      message: "First-year students are not eligible.",
+    }),
+  universityRollNo: z.string().trim()
+    .regex(/^(23|24|25)\d{11}$/, "Invalid university roll number.")
+    .refine((value) => value.includes("027"), {
+      message: "University roll number must contain college code 027.",
+    }),
+  branch: z.enum([
+    "CSE",
+    "CSE (AI & ML)",
+    "IT",
+    "ECE",
+    "EN",
+    "ME",
+    "CS (Data Science)",
+    "CE",
+  ]),
+  gender: z.enum(["Male", "Female", "Other", "Prefer not to say"]),
+  residence: z.enum(["Dayscholar", "Hosteler"]),
+  currentYear: z.enum(["2", "3", "4"]),
+  section: z.string().trim().max(30).optional().default(""),
+  collegeEmail: z.string().trim().email().max(254),
+  whatsapp: z.string().trim().regex(/^\+?[0-9\s()-]{8,20}$/),
+  attendanceConfirmed: z.literal(true),
+});
 
 app.get("/api/health", async (req, res) => {
   try {
