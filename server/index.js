@@ -111,6 +111,15 @@ app.post(
   "/api/registrations",
   registrationLimiter,
   async (req, res) => {
+    const { turnstileToken } = req.body ?? {};
+
+    const captchaValid = await verifyTurnstileToken(turnstileToken);
+
+    if (!captchaValid) {
+        return res.status(403).json({
+            error: "CAPTCHA verification failed. Please try again.",
+        });
+    }
     const parsed = registrationSchema.safeParse(req.body);
 
     if (!parsed.success) {
