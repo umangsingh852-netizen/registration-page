@@ -147,10 +147,15 @@ app.post(
       const parsed = registrationSchema.safeParse(req.body);
 
       if (!parsed.success) {
+        console.error(
+            "Registration validation errors:",
+            parsed.error.flatten()
+        );
+
         return res.status(400).json({
-          error: "Please check the registration details.",
+            error: "Please check the registration details.",
         });
-      }
+        }
 
       const {
         fullName,

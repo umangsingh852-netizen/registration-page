@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import "./index.css";
 
@@ -295,8 +294,8 @@ export default function App() {
           branch: form.branch,
           gender: form.gender,
           residence: form.residence,
-          currentYear: Number(form.currentYear),
-          section: form.section.trim() || null,
+          currentYear: form.currentYear,
+          section: form.section.trim(),
           collegeEmail: form.collegeEmail.trim().toLowerCase(),
           whatsapp: form.whatsapp.trim(),
           turnstileToken: captchaToken,
@@ -349,7 +348,7 @@ export default function App() {
       <main className="page-shell">
         <section className="success-card">
           <div className="success-icon" aria-hidden="true">✓</div>
-          <p className="eyebrow">HOUR OF CODE · 27TH</p>
+          <p className="eyebrow">TEAM OSS · HOUR OF CODE</p>
           <h1>You're registered.</h1>
           <p className="muted">
             {message} Keep an eye on your college email for any
@@ -385,16 +384,27 @@ export default function App() {
   return (
     <main className="page-shell">
       <header className="site-header">
-        <a className="brand" href="/" aria-label="Hour of Code home">
-          <span className="brand-mark">H</span>
-          <span>HOUR OF CODE</span>
+        <a className="brand" href="/" aria-label="Team OSS Hour of Code">
+          <img
+            className="brand-logo"
+            src="/team-oss-logo.png"
+            alt="Team OSS"
+            onError={(event) => {
+              event.currentTarget.style.display = "none";
+            }}
+          />
+          <span className="brand-divider" aria-hidden="true" />
+          <span className="brand-title">HOUR OF CODE</span>
         </a>
-        <span className="event-date">27TH · COLLEGE EVENT</span>
+        <span className="event-date">
+          <span className="event-date-day">27TH OCT</span>
+          <span className="event-date-time">4 PM ONWARDS</span>
+        </span>
       </header>
 
       <section className="registration-card">
         <div className="intro">
-          <p className="eyebrow">DSA CODING CONTEST</p>
+          <p className="eyebrow">TEAM OSS CODING CONTEST</p>
           <h1>Reserve your seat.</h1>
           <p className="muted">
             Register with your academic details to join Hour of Code.
@@ -699,8 +709,8 @@ export default function App() {
         )}
 
         <footer className="card-footer">
-          <span>HOUR OF CODE</span>
-          <span>Secure registration</span>
+          <span>TEAM OSS · HOUR OF CODE</span>
+          <span>27 OCT · 4 PM ONWARDS</span>
         </footer>
       </section>
 
